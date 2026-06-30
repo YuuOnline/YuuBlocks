@@ -174,6 +174,12 @@ declare namespace Godot {
        */
       createJSVM: (jsPath: string) => number | undefined;
       closeJSVM: (id: number) => boolean;
+
+      /**
+       * Get the VM Folder Path, useful for storing files related to the VM (stats, saves, etc)
+       * @returns the path of the root VM folder, or undefined if something goes wrong
+       */
+      getVMPath: () => string | undefined;
     }
     zip: {
       /**

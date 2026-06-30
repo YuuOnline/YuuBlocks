@@ -29,11 +29,27 @@ export const Files = {
 
 /**
  * Options used to select where a file will be saved (a few examples for now)
- * - 'user://templates/YuuPaint.zip' place to save template world zip files
- * - 'user://worlds/YuuPaint/scripts' example world script location
+ * - 'user://worlds' example of where a vm / world files are stored
  * - 'user://profile' example to save user settings into
+ * - 'vm' uses the path of the current vm
  *  */
-export type DirectoryBasePaths = 'user://worlds' | 'user://profile';
+export type DirectoryBasePaths = 'user://worlds' | 'user://profile' | 'vm';
+
+
+let vmFolderPath = '';
+
+function getBaseDirPath(baseDirPath: DirectoryBasePaths): string {
+  if (baseDirPath === 'vm') {
+    if (vmFolderPath === '') {
+      vmFolderPath = Godot.files.folder.getVMPath() ?? '';
+    }
+    
+    return vmFolderPath;
+  }
+  else {
+    return baseDirPath;
+  }
+}
 
 
 /**
@@ -164,7 +180,7 @@ function extractFilesFromZip(baseDirPathOfZip: DirectoryBasePaths, subDirPathOfZ
 
 
 function combineBaseAndSubPaths(baseDirPath: DirectoryBasePaths, subDirPath: string): string {
-  let dirPath = baseDirPath;
+  let dirPath = getBaseDirPath(baseDirPath);
 
   if (subDirPath.length > 0 && subDirPath.charAt(0) !== '/') {
     dirPath += '/';
