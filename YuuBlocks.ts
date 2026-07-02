@@ -135,4 +135,7 @@ function placeBlock(isRight: boolean) {
 
     blocks.set(key, newBlock);
   }
+  else {
+    blocks.delete(key);
+  }
 }
