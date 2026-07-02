@@ -148,7 +148,7 @@ function placeBlock(isRight: boolean) {
   if (isPlaceMode) {
     const bodyPos = Player.position.get() ?? Vector3.zero;
 
-    if (bodyPos.distanceTo(perHandData.placementPos) > 1) {
+    if (bodyPos.distanceTo(perHandData.placementPos) > 0.6) {
       const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
 
       blocks.set(key, newBlock);
