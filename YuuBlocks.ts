@@ -4,6 +4,7 @@ import { Vector3 } from "./Yuu API/Basic Types/Vector3";
 import { inWorldConsole } from "./Yuu API/Console";
 import { Controller } from "./Yuu API/Controller";
 import { Entity } from "./Yuu API/Entity";
+import { entityRayClick_Data } from "./Yuu API/EntityRayClick_Data";
 import { Events } from "./Yuu API/Events";
 import { Player } from "./Yuu API/Player";
 import { registerStart } from "./Yuu API/RegisterStart";
@@ -56,43 +57,53 @@ function onUpdate(deltaTime: number) {
 
 
 function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
-  const handPos = isRight ? Player.rightHand.position.get() : Player.leftHand.position.get();
-  const handForward = isRight ? Player.rightHand.forward.get() : Player.leftHand.forward.get();
+  const rayProperties = isRight ? entityRayClick_Data.rightRayProperties : entityRayClick_Data.leftRayProperties;
 
-  if (handPos && handForward) {
-    const rayPlacementPos = handPos.add(handForward.multiply(1.75));
-    perHandData.placementPos = handPos.add(handForward.multiply(3.5));
-    perHandData.placementPos.x = Math.floor(perHandData.placementPos.x) + 0.5;
-    perHandData.placementPos.y = Math.max(0.5, Math.floor(perHandData.placementPos.y) + 0.5);
-    perHandData.placementPos.z = Math.floor(perHandData.placementPos.z) + 0.5;
+  const startPos = (isRight ? Player.rightHand.position.get() : Player.leftHand.position.get()) ?? Vector3.zero;
+  const handForward = (isRight ? Player.rightHand.forward.get() : Player.leftHand.forward.get()) ?? Vector3.zero;
+  
+  const isDeleteMode = mode === 1;
+  
+  let destPos =  rayProperties.rayHit?.pos;
+  
+  if (destPos === undefined) {
+    destPos = startPos.add(handForward.multiply(3.5));
+  }
+  else {
+    destPos.add(handForward.multiply(isDeleteMode ? 0.5 : -0.5));
+  }
+  
+  const rayPlacementPos = startPos.lerp(destPos, 0.5);
+  perHandData.placementPos = destPos;
+  perHandData.placementPos.x = Math.floor(perHandData.placementPos.x) + 0.5;
+  perHandData.placementPos.y = Math.max(0.5, Math.floor(perHandData.placementPos.y) + 0.5);
+  perHandData.placementPos.z = Math.floor(perHandData.placementPos.z) + 0.5;
 
-    perHandData.pointer.pos = rayPlacementPos;
-    perHandData.pointer.scale = new Vector3(0.001, 0.005, 3.5);
-    perHandData.pointer.rot = Quaternion.lookAt(handForward, Vector3.up);
+  perHandData.pointer.pos = rayPlacementPos;
+  perHandData.pointer.scale = new Vector3(0.001, 0.005, 3.5);
+  perHandData.pointer.rot = Quaternion.lookAt(handForward, Vector3.up);
 
-    const isDeleteMode = mode === 1;
-    let showCube = true;
+  let showCube = true;
 
-    if (isDeleteMode) {
-      const key = perHandData.placementPos.toString();
+  if (isDeleteMode) {
+    const key = perHandData.placementPos.toString();
 
-      const curBlock = blocks.get(key);
+    const curBlock = blocks.get(key);
 
-      showCube = (curBlock !== undefined);
-    }
+    showCube = (curBlock !== undefined);
+  }
 
-    if (showCube) {
-      perHandData.previewCube.pos = perHandData.placementPos;
-    }
-    else {
-      perHandData.previewCube.pos = new Vector3(0, -5, 0);
-    }
+  if (showCube) {
+    perHandData.previewCube.pos = perHandData.placementPos;
+  }
+  else {
+    perHandData.previewCube.pos = new Vector3(0, -5, 0);
   }
 }
 
 function updateRayColor(isForward: boolean) {
   const addAmount = isForward ? 1 : (colors.length - 1);
-    
+
   colorIndex = (colorIndex + addAmount) % colors.length;
 
   leftRayCastPerHandData.pointer.mesh.color.set(colors[colorIndex], 0.5);
