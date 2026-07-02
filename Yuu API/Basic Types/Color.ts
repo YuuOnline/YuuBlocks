@@ -47,7 +47,7 @@ export class Color {
 
   static get orange(): Color { return new Color(1, 0.5, 0); }
   static get purple(): Color { return new Color(0.5, 0, 1); }
-  static get pink(): Color { return new Color(1, 0.686, 0.88); }
+  static get pink(): Color { return new Color(1, 0.5, 0.6); }
   static get lavender(): Color { return new Color(0.859, 0.557, 1); }
 
   static randomHue(saturation: number = 1, value: number = 1): Color {
