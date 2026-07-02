@@ -58,13 +58,13 @@ function onUpdate(deltaTime: number) {
 function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
   const handPos = (isRight ? Player.rightHand.position.get() : Player.leftHand.position.get()) ?? Vector3.zero;
   const handForward = (isRight ? Player.rightHand.forward.get() : Player.leftHand.forward.get()) ?? Vector3.zero;
-  
-  const rayHit = Raycast.directional(handPos, handForward, 3.5);
-  
+
+  const rayHit = Raycast.directional(handPos, handForward, 3.5, { getEntity: true });
+
   const isDeleteMode = mode === 1;
-  
-  let destPos =  rayHit?.entity?.pos;
-  
+
+  let destPos = rayHit?.entity?.pos;
+
   if (destPos === undefined) {
     destPos = handPos.add(handForward.multiply(3.5));
   }
@@ -73,7 +73,7 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
       destPos.add(rayHit.normal);
     }
   }
-  
+
   const rayPlacementPos = handPos.lerp(destPos, 0.5);
   perHandData.placementPos = destPos;
   perHandData.placementPos.x = Math.floor(perHandData.placementPos.x) + 0.5;
@@ -145,8 +145,6 @@ function placeBlock(isRight: boolean) {
 
   if (isPlaceMode) {
     const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
-
-    newBlock.rayClick.initialize(false);
 
     blocks.set(key, newBlock);
   }
