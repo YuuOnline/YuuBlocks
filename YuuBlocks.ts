@@ -146,6 +146,8 @@ function placeBlock(isRight: boolean) {
   if (isPlaceMode) {
     const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
 
+    newBlock.rayClick.initialize(false);
+
     blocks.set(key, newBlock);
   }
   else {
