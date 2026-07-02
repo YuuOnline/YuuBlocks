@@ -14,54 +14,72 @@ let colorIndex = 0;
 // Add intermediary colors and such
 let colors: Color[] = [Color.lavender, Color.magenta, Color.pink, Color.red, Color.orange, Color.yellow, Color.green, Color.cyan, Color.blue, Color.purple, Color.black, new Color(0.5, 0.5, 0.5), Color.white];
 
-const rayCasts = {
-  leftPointer: spawnPrimitive.cube(new Vector3(0, -10, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.5, false, 'Empty', undefined),
-  rightPointer: spawnPrimitive.cube(new Vector3(0, -10, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.5, false, 'Empty', undefined),
+
+type RayCastPerHandData = { pointer: Entity, previewCube: Entity, placementPos: Vector3 };
+
+const leftRayCastPerHandData: RayCastPerHandData = {
+  pointer: spawnPrimitive.cube(new Vector3(0, -10, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.5, false, 'Empty', undefined),
+  previewCube: spawnPrimitive.cube(new Vector3(0, -5, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.35, false, 'Animated', undefined),
+  placementPos: Vector3.zero,
 }
 
-const previewCubeLeft = spawnPrimitive.cube(new Vector3(0, -5, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.35, false, 'Animated', undefined);
-const previewCubeRight = spawnPrimitive.cube(new Vector3(0, -7.5, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.35, false, 'Animated', undefined);
+const rightRayCastPerHandData: RayCastPerHandData = {
+  pointer: spawnPrimitive.cube(new Vector3(0, -10, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.5, false, 'Empty', undefined),
+  previewCube: spawnPrimitive.cube(new Vector3(0, -7.5, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.35, false, 'Animated', undefined),
+  placementPos: Vector3.zero,
+}
 
 
 registerStart(start);
 function start() {
-  inWorldConsole.visible(true, new Vector3(0, 1.5, -1.5));
+  // inWorldConsole.visible(true, new Vector3(0, 1.5, -1.5));
 
-  console.log('Hello World!');
+  // console.log('Hello World!');
 
   Events.onPhysicsUpdate(onUpdate);
 
   Controller.subscribe('rightB', 'Pressed', updateRayColor);
   Controller.subscribe('leftY', 'Pressed', updateRayColor);
+
+  Controller.subscribe('rightTrigger', 'Pressed', () => { placeBlock(true); });
+  Controller.subscribe('leftTrigger', 'Pressed', () => { placeBlock(false); });
 }
 
 
 function onUpdate(deltaTime: number) {
-  drawRayCast(rayCasts.leftPointer, false);
-  drawRayCast(rayCasts.rightPointer, true);
+  drawRayCast(leftRayCastPerHandData, false);
+  drawRayCast(rightRayCastPerHandData, true);
 }
 
 
-function drawRayCast(pointer: Entity, isRight: boolean) {
+function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
   const handPos = isRight ? Player.rightHand.position.get() : Player.leftHand.position.get();
   const handForward = isRight ? Player.rightHand.forward.get() : Player.leftHand.forward.get();
-  const previewCube = isRight ? previewCubeRight : previewCubeLeft;
 
   if (handPos && handForward) {
     const rayPlacementPos = handPos.add(handForward.multiply(1.75));
-    const placementPos = handPos.add(handForward.multiply(3.5));
+    perHandData.placementPos = handPos.add(handForward.multiply(3.5));
 
-    pointer.pos = rayPlacementPos;
-    pointer.scale = new Vector3(0.001, 0.005, 3.5);
-    pointer.rot = Quaternion.lookAt(handForward, Vector3.up);
+    perHandData.pointer.pos = rayPlacementPos;
+    perHandData.pointer.scale = new Vector3(0.001, 0.005, 3.5);
+    perHandData.pointer.rot = Quaternion.lookAt(handForward, Vector3.up);
 
-    previewCube.pos = placementPos;
+    perHandData.previewCube.pos = perHandData.placementPos;
   }
 }
 
 function updateRayColor() {
   colorIndex = (colorIndex + 1) % colors.length;
 
-  rayCasts.leftPointer.mesh.color.set(colors[colorIndex], 0.5);
-  rayCasts.rightPointer.mesh.color.set(colors[colorIndex], 0.5);
+  leftRayCastPerHandData.pointer.mesh.color.set(colors[colorIndex], 0.5);
+  rightRayCastPerHandData.pointer.mesh.color.set(colors[colorIndex], 0.5);
+
+  leftRayCastPerHandData.previewCube.mesh.color.set(colors[colorIndex], 0.5);
+  rightRayCastPerHandData.previewCube.mesh.color.set(colors[colorIndex], 0.5);
+}
+
+function placeBlock(isRight: boolean) {
+  const perHandData = isRight ? rightRayCastPerHandData : leftRayCastPerHandData;
+
+  spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
 }
