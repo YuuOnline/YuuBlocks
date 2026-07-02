@@ -70,7 +70,7 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
   }
   else {
     if (!isDeleteMode && rayHit) {
-      destPos.add(rayHit.normal);
+      destPos.addInPlace(rayHit.normal);
     }
   }
 
@@ -81,7 +81,7 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
   perHandData.placementPos.z = Math.floor(perHandData.placementPos.z) + 0.5;
 
   perHandData.pointer.pos = rayPlacementPos;
-  perHandData.pointer.scale = new Vector3(0.001, 0.005, 3.5);
+  perHandData.pointer.scale = new Vector3(0.001, 0.005, rayHit ? rayHit.distance : 3.5);
   perHandData.pointer.rot = Quaternion.lookAt(handForward, Vector3.up);
 
   let showCube = true;
