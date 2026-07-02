@@ -19,6 +19,9 @@ const rayCasts = {
   rightPointer: spawnPrimitive.cube(new Vector3(0, -10, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.5, false, 'Empty', undefined),
 }
 
+const previewCubeLeft = spawnPrimitive.cube(new Vector3(0, -5, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.35, false, 'Animated', undefined);
+const previewCubeRight = spawnPrimitive.cube(new Vector3(0, -7.5, 0), Vector3.one, Quaternion.one, colors[colorIndex], 0.35, false, 'Animated', undefined);
+
 
 registerStart(start);
 function start() {
@@ -42,13 +45,17 @@ function onUpdate(deltaTime: number) {
 function drawRayCast(pointer: Entity, isRight: boolean) {
   const handPos = isRight ? Player.rightHand.position.get() : Player.leftHand.position.get();
   const handForward = isRight ? Player.rightHand.forward.get() : Player.leftHand.forward.get();
+  const previewCube = isRight ? previewCubeRight : previewCubeLeft;
 
   if (handPos && handForward) {
-    const placementPos = handPos.add(handForward.multiply(2.5));
+    const rayPlacementPos = handPos.add(handForward.multiply(1.75));
+    const placementPos = handPos.add(handForward.multiply(3.5));
 
-    pointer.pos = placementPos;
+    pointer.pos = rayPlacementPos;
     pointer.scale = new Vector3(0.001, 0.005, 3.5);
     pointer.rot = Quaternion.lookAt(handForward, Vector3.up);
+
+    previewCube.pos = placementPos;
   }
 }
 
