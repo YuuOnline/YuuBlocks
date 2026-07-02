@@ -63,13 +63,15 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
   
   const isDeleteMode = mode === 1;
   
-  let destPos =  rayHit?.pos;
+  let destPos =  rayHit?.entity?.pos;
   
   if (destPos === undefined) {
     destPos = handPos.add(handForward.multiply(3.5));
   }
   else {
-    destPos.add(handForward.multiply(isDeleteMode ? 0.5 : -0.5));
+    if (!isDeleteMode && rayHit) {
+      destPos.add(rayHit.normal);
+    }
   }
   
   const rayPlacementPos = handPos.lerp(destPos, 0.5);
