@@ -12,7 +12,7 @@ import { spawnPrimitive } from "./Yuu API/SpawnPrimitive";
 
 let colorIndex = 0;
 // Add intermediary colors and such
-let colors: Color[] = [Color.lavender, Color.magenta, Color.pink, Color.red, Color.orange, Color.yellow, Color.green, Color.cyan, Color.blue, Color.purple, Color.black, new Color(0.5, 0.5, 0.5), Color.white];
+let colors: Color[] = [Color.lavender, Color.magenta, Color.pink, Color.red, Color.orange, Color.yellow, Color.green, Color.cyan, Color.blue, Color.purple, Color.black, Color.darkGray, Color.gray, Color.lightGray, Color.white];
 
 
 type RayCastPerHandData = { pointer: Entity, previewCube: Entity, placementPos: Vector3 };
@@ -59,6 +59,9 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
   if (handPos && handForward) {
     const rayPlacementPos = handPos.add(handForward.multiply(1.75));
     perHandData.placementPos = handPos.add(handForward.multiply(3.5));
+    perHandData.placementPos.x = Math.floor(perHandData.placementPos.x + 0.5);
+    perHandData.placementPos.y = Math.floor(perHandData.placementPos.y + 0.5);
+    perHandData.placementPos.z = Math.floor(perHandData.placementPos.z + 0.5);
 
     perHandData.pointer.pos = rayPlacementPos;
     perHandData.pointer.scale = new Vector3(0.001, 0.005, 3.5);
