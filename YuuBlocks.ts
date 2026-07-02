@@ -146,9 +146,13 @@ function placeBlock(isRight: boolean) {
   const isPlaceMode = mode === 0;
 
   if (isPlaceMode) {
-    const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
+    const bodyPos = Player.position.get() ?? Vector3.zero;
 
-    blocks.set(key, newBlock);
+    if (bodyPos.distanceTo(perHandData.placementPos) > 1) {
+      const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
+
+      blocks.set(key, newBlock);
+    }
   }
   else {
     blocks.delete(key);
