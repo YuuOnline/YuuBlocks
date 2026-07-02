@@ -61,12 +61,14 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
 
   const rayHit = Raycast.directional(handPos, handForward, 3.5, { getEntity: true });
 
-  const isDeleteMode = mode === 1;
+  const isDeleteMode = (mode === 1);
 
   let destPos = rayHit?.entity?.pos;
+  let rayDestPos = rayHit?.pos ?? Vector3.zero;
 
   if (destPos === undefined) {
     destPos = handPos.add(handForward.multiply(3.5));
+    rayDestPos = destPos;
   }
   else {
     if (!isDeleteMode && rayHit) {
@@ -74,7 +76,7 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
     }
   }
 
-  const rayPlacementPos = handPos.lerp(destPos, 0.5);
+  const rayPlacementPos = handPos.lerp(rayDestPos, 0.5);
   perHandData.placementPos = destPos;
   perHandData.placementPos.x = Math.floor(perHandData.placementPos.x) + 0.5;
   perHandData.placementPos.y = Math.max(0.5, Math.floor(perHandData.placementPos.y) + 0.5);
