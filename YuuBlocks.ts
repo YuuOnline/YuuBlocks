@@ -7,6 +7,7 @@ import { Entity } from "./Yuu API/Entity";
 import { entityRayClick_Data } from "./Yuu API/EntityRayClick_Data";
 import { Events } from "./Yuu API/Events";
 import { Player } from "./Yuu API/Player";
+import { Raycast } from "./Yuu API/Raycast";
 import { registerStart } from "./Yuu API/RegisterStart";
 import { spawnPrimitive } from "./Yuu API/SpawnPrimitive";
 
@@ -34,10 +35,6 @@ let mode = 0;
 
 registerStart(start);
 function start() {
-  inWorldConsole.visible(true, new Vector3(0, 1.5, -1.5));
-
-  console.log('Hello World!');
-
   Events.onPhysicsUpdate(onUpdate);
 
   Controller.subscribe('leftY', 'Pressed', () => { updateRayColor(true); });
@@ -59,23 +56,23 @@ function onUpdate(deltaTime: number) {
 
 
 function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
-  const rayProperties = isRight ? entityRayClick_Data.rightRayProperties : entityRayClick_Data.leftRayProperties;
-
-  const startPos = (isRight ? Player.rightHand.position.get() : Player.leftHand.position.get()) ?? Vector3.zero;
+  const handPos = (isRight ? Player.rightHand.position.get() : Player.leftHand.position.get()) ?? Vector3.zero;
   const handForward = (isRight ? Player.rightHand.forward.get() : Player.leftHand.forward.get()) ?? Vector3.zero;
+  
+  const rayHit = Raycast.directional(handPos, handForward, 3.5);
   
   const isDeleteMode = mode === 1;
   
-  let destPos =  rayProperties.rayHit?.pos;
+  let destPos =  rayHit?.pos;
   
   if (destPos === undefined) {
-    destPos = startPos.add(handForward.multiply(3.5));
+    destPos = handPos.add(handForward.multiply(3.5));
   }
   else {
     destPos.add(handForward.multiply(isDeleteMode ? 0.5 : -0.5));
   }
   
-  const rayPlacementPos = startPos.lerp(destPos, 0.5);
+  const rayPlacementPos = handPos.lerp(destPos, 0.5);
   perHandData.placementPos = destPos;
   perHandData.placementPos.x = Math.floor(perHandData.placementPos.x) + 0.5;
   perHandData.placementPos.y = Math.max(0.5, Math.floor(perHandData.placementPos.y) + 0.5);
