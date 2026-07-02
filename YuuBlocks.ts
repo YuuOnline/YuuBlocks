@@ -34,9 +34,9 @@ let mode = 0;
 
 registerStart(start);
 function start() {
-  // inWorldConsole.visible(true, new Vector3(0, 1.5, -1.5));
+  inWorldConsole.visible(true, new Vector3(0, 1.5, -1.5));
 
-  // console.log('Hello World!');
+  console.log('Hello World!');
 
   Events.onPhysicsUpdate(onUpdate);
 
@@ -51,6 +51,8 @@ function start() {
 
 
 function onUpdate(deltaTime: number) {
+  console.log(JSON.stringify(entityRayClick_Data.rightRayProperties.rayHit?.pos));
+
   drawRayCast(leftRayCastPerHandData, false);
   drawRayCast(rightRayCastPerHandData, true);
 }
