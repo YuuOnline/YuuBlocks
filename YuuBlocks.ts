@@ -59,9 +59,9 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
   if (handPos && handForward) {
     const rayPlacementPos = handPos.add(handForward.multiply(1.75));
     perHandData.placementPos = handPos.add(handForward.multiply(3.5));
-    perHandData.placementPos.x = Math.floor(perHandData.placementPos.x);
-    perHandData.placementPos.y = Math.floor(perHandData.placementPos.y);
-    perHandData.placementPos.z = Math.floor(perHandData.placementPos.z);
+    perHandData.placementPos.x = Math.floor(perHandData.placementPos.x) + 0.5;
+    perHandData.placementPos.y = Math.floor(perHandData.placementPos.y) + 0.5;
+    perHandData.placementPos.z = Math.floor(perHandData.placementPos.z) + 0.5;
 
     perHandData.pointer.pos = rayPlacementPos;
     perHandData.pointer.scale = new Vector3(0.001, 0.005, 3.5);
