@@ -60,7 +60,7 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
     const rayPlacementPos = handPos.add(handForward.multiply(1.75));
     perHandData.placementPos = handPos.add(handForward.multiply(3.5));
     perHandData.placementPos.x = Math.floor(perHandData.placementPos.x) + 0.5;
-    perHandData.placementPos.y = Math.floor(perHandData.placementPos.y) + 0.5;
+    perHandData.placementPos.y = Math.max(0.5, Math.floor(perHandData.placementPos.y) + 0.5);
     perHandData.placementPos.z = Math.floor(perHandData.placementPos.z) + 0.5;
 
     perHandData.pointer.pos = rayPlacementPos;
@@ -81,8 +81,18 @@ function updateRayColor() {
   rightRayCastPerHandData.previewCube.mesh.color.set(colors[colorIndex], 0.5);
 }
 
+
+const blocks = new Map<string, Entity>();
+
 function placeBlock(isRight: boolean) {
   const perHandData = isRight ? rightRayCastPerHandData : leftRayCastPerHandData;
 
-  spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
+  const key = perHandData.placementPos.toString();
+
+  const curBlock = blocks.get(key);
+  curBlock?.destroy();
+
+  const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
+
+  blocks.set(key, newBlock);
 }
