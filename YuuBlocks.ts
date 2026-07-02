@@ -29,6 +29,7 @@ const rightRayCastPerHandData: RayCastPerHandData = {
   placementPos: Vector3.zero,
 }
 
+let mode = 0;
 
 registerStart(start);
 function start() {
@@ -40,6 +41,9 @@ function start() {
 
   Controller.subscribe('rightB', 'Pressed', updateRayColor);
   Controller.subscribe('leftY', 'Pressed', updateRayColor);
+
+  Controller.subscribe('rightA', 'Pressed', updateMode);
+  Controller.subscribe('leftX', 'Pressed', updateMode);
 
   Controller.subscribe('rightTrigger', 'Pressed', () => { placeBlock(true); });
   Controller.subscribe('leftTrigger', 'Pressed', () => { placeBlock(false); });
@@ -67,7 +71,23 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
     perHandData.pointer.scale = new Vector3(0.001, 0.005, 3.5);
     perHandData.pointer.rot = Quaternion.lookAt(handForward, Vector3.up);
 
-    perHandData.previewCube.pos = perHandData.placementPos;
+    const isDeleteMode = mode === 1;
+    let showCube = true;
+
+    if (isDeleteMode) {
+      const key = perHandData.placementPos.toString();
+
+      const curBlock = blocks.get(key);
+
+      showCube = (curBlock !== undefined);
+    }
+
+    if (showCube) {
+      perHandData.previewCube.pos = perHandData.placementPos;
+    }
+    else {
+      perHandData.previewCube.pos = new Vector3(0, -5, 0);
+    }
   }
 }
 
@@ -81,18 +101,38 @@ function updateRayColor() {
   rightRayCastPerHandData.previewCube.mesh.color.set(colors[colorIndex], 0.5);
 }
 
+function updateMode() {
+  mode = (mode + 1) % 2;
+
+  const isPlaceMode = mode === 0;
+
+  const scale = isPlaceMode ? Vector3.one : new Vector3(1.05, 1.05, 1.05);
+  const color = isPlaceMode ? colors[colorIndex] : new Color(0.5, 0, 0);
+  const alpha = isPlaceMode ? 0.5 : 0.8;
+
+  leftRayCastPerHandData.previewCube.mesh.color.set(color, alpha);
+  rightRayCastPerHandData.previewCube.mesh.color.set(color, alpha);
+
+  leftRayCastPerHandData.previewCube.scale = scale;
+  rightRayCastPerHandData.previewCube.scale = scale;
+}
+
 
 const blocks = new Map<string, Entity>();
 
 function placeBlock(isRight: boolean) {
   const perHandData = isRight ? rightRayCastPerHandData : leftRayCastPerHandData;
-
+  
   const key = perHandData.placementPos.toString();
-
+  
   const curBlock = blocks.get(key);
   curBlock?.destroy();
+  
+  const isPlaceMode = mode === 0;
+  
+  if (isPlaceMode) {
+    const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
 
-  const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
-
-  blocks.set(key, newBlock);
+    blocks.set(key, newBlock);
+  }
 }
