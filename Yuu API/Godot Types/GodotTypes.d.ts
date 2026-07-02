@@ -177,9 +177,9 @@ declare namespace Godot {
 
       /**
        * Get the VM Folder Path, useful for storing files related to the VM (stats, saves, etc)
-       * @returns the path of the root VM folder, or undefined if something goes wrong
+       * @returns the path of the root VM folder
        */
-      getVMPath: () => string | undefined;
+      getVMPath: () => string;
     }
     zip: {
       /**

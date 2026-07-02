@@ -41,7 +41,7 @@ let vmFolderPath = '';
 function getBaseDirPath(baseDirPath: DirectoryBasePaths): string {
   if (baseDirPath === 'vm') {
     if (vmFolderPath === '') {
-      vmFolderPath = Godot.files.folder.getVMPath() ?? '';
+      vmFolderPath = Godot.files.folder.getVMPath();
     }
     
     return vmFolderPath;
