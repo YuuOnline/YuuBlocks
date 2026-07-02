@@ -39,11 +39,10 @@ function start() {
 
   Events.onPhysicsUpdate(onUpdate);
 
-  Controller.subscribe('rightB', 'Pressed', updateRayColor);
-  Controller.subscribe('leftY', 'Pressed', updateRayColor);
+  Controller.subscribe('leftY', 'Pressed', () => { updateRayColor(true); });
+  Controller.subscribe('leftX', 'Pressed', () => { updateRayColor(false); });
 
-  Controller.subscribe('rightA', 'Pressed', updateMode);
-  Controller.subscribe('leftX', 'Pressed', updateMode);
+  Controller.subscribe('rightB', 'Pressed', updateMode);
 
   Controller.subscribe('rightTrigger', 'Pressed', () => { placeBlock(true); });
   Controller.subscribe('leftTrigger', 'Pressed', () => { placeBlock(false); });
@@ -91,8 +90,10 @@ function drawRayCast(perHandData: RayCastPerHandData, isRight: boolean) {
   }
 }
 
-function updateRayColor() {
-  colorIndex = (colorIndex + 1) % colors.length;
+function updateRayColor(isForward: boolean) {
+  const addAmount = isForward ? 1 : (colors.length - 1);
+    
+  colorIndex = (colorIndex + addAmount) % colors.length;
 
   leftRayCastPerHandData.pointer.mesh.color.set(colors[colorIndex], 0.5);
   rightRayCastPerHandData.pointer.mesh.color.set(colors[colorIndex], 0.5);
@@ -122,14 +123,14 @@ const blocks = new Map<string, Entity>();
 
 function placeBlock(isRight: boolean) {
   const perHandData = isRight ? rightRayCastPerHandData : leftRayCastPerHandData;
-  
+
   const key = perHandData.placementPos.toString();
-  
+
   const curBlock = blocks.get(key);
   curBlock?.destroy();
-  
+
   const isPlaceMode = mode === 0;
-  
+
   if (isPlaceMode) {
     const newBlock = spawnPrimitive.cube(perHandData.placementPos, Vector3.one, Quaternion.one, colors[colorIndex], 1, true, 'Static', undefined);
 
