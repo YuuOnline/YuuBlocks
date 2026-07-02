@@ -32,9 +32,9 @@ export class Color {
 
 
   static get black(): Color { return new Color(0, 0, 0); }
-  static get lightGray(): Color { return new Color(0.25, 0.25, 0.25); }
-  static get gray(): Color { return new Color(0.5, 0.5, 0.5); }
   static get darkGray(): Color { return new Color(0.75, 0.75, 0.75); }
+  static get gray(): Color { return new Color(0.5, 0.5, 0.5); }
+  static get lightGray(): Color { return new Color(0.25, 0.25, 0.25); }
   static get white(): Color { return new Color(1, 1, 1); }
 
   static get red(): Color { return new Color(1, 0, 0); }
